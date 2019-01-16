@@ -9,6 +9,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,6 +23,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.mindandmatters.william.maps_test.R;
 import com.mindandmatters.william.maps_test.adapters.UserRecyclerAdapter;
 import com.mindandmatters.william.maps_test.models.User;
+import com.mindandmatters.william.maps_test.models.UserLocation;
 
 import java.util.ArrayList;
 
@@ -38,6 +40,7 @@ public class UserListFragment extends Fragment implements OnMapReadyCallback {
 
     //vars
     private ArrayList<User> mUserList = new ArrayList<>();
+    private ArrayList<UserLocation> mUserLocations = new ArrayList<>();
     private UserRecyclerAdapter mUserRecyclerAdapter;
 
 
@@ -50,6 +53,7 @@ public class UserListFragment extends Fragment implements OnMapReadyCallback {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             mUserList = getArguments().getParcelableArrayList(getString(R.string.intent_user_list));
+            mUserLocations = getArguments().getParcelableArrayList(getString(R.string.intent_user_locations));
         }
     }
 
@@ -61,8 +65,13 @@ public class UserListFragment extends Fragment implements OnMapReadyCallback {
         mUserListRecyclerView = view.findViewById(R.id.user_list_recycler_view);
 
         initUserListRecyclerView();
-
         initGoogleMap(savedInstanceState);
+
+        for(UserLocation userLocation: mUserLocations){
+            Log.d(TAG, "onCreateView: user location: " + userLocation.getUser().getUsername());
+            Log.d(TAG, "onCreateView: geopoint: " + userLocation.getGeo_point().getLatitude() + ", " +
+            userLocation.getGeo_point().getLongitude());
+        }
 
         return view;
     }

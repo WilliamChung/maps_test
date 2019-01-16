@@ -15,6 +15,7 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.EditText;
 
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.mindandmatters.william.maps_test.R;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -33,6 +34,7 @@ import com.mindandmatters.william.maps_test.adapters.ChatMessageRecyclerAdapter;
 import com.mindandmatters.william.maps_test.models.ChatMessage;
 import com.mindandmatters.william.maps_test.models.Chatroom;
 import com.mindandmatters.william.maps_test.models.User;
+import com.mindandmatters.william.maps_test.models.UserLocation;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -56,6 +58,7 @@ public class ChatroomActivity extends AppCompatActivity implements
     private ArrayList<ChatMessage> mMessages = new ArrayList<>();
     private Set<String> mMessageIds = new HashSet<>();
     private ArrayList<User> mUserList = new ArrayList<>();
+    private ArrayList<UserLocation> mUserLocations = new ArrayList<>();
     private UserListFragment mUserListFragment;
 
 
@@ -135,12 +138,32 @@ public class ChatroomActivity extends AppCompatActivity implements
                             for (QueryDocumentSnapshot doc : queryDocumentSnapshots) {
                                 User user = doc.toObject(User.class);
                                 mUserList.add(user);
+                                getUserLocation(user);
                             }
 
                             Log.d(TAG, "onEvent: user list size: " + mUserList.size());
                         }
                     }
                 });
+    }
+
+    private void getUserLocation(User user) {
+        DocumentReference locationsRef = mDb
+                .collection(getString(R.string.collection_user_locations))
+                .document(user.getUser_id());
+
+        locationsRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+
+                if (task.isSuccessful()) {
+                    if (task.getResult().toObject(UserLocation.class) != null) {
+
+                        mUserLocations.add(task.getResult().toObject(UserLocation.class));
+                    }
+                }
+            }
+        });
     }
 
     private void initChatroomRecyclerView(){
@@ -215,6 +238,7 @@ public class ChatroomActivity extends AppCompatActivity implements
         UserListFragment fragment = UserListFragment.newInstance();
         Bundle bundle = new Bundle();
         bundle.putParcelableArrayList(getString(R.string.intent_user_list), mUserList);
+        bundle.putParcelableArrayList(getString(R.string.intent_user_locations), mUserLocations);
         fragment.setArguments(bundle);
 
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();

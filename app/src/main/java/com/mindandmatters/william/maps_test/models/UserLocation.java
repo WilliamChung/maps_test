@@ -1,11 +1,14 @@
 package com.mindandmatters.william.maps_test.models;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.google.firebase.firestore.GeoPoint;
 import com.google.firebase.firestore.ServerTimestamp;
 
 import java.util.Date;
 
-public class UserLocation {
+public class UserLocation implements Parcelable{
 
     private User user;
     private GeoPoint geo_point;
@@ -54,4 +57,13 @@ public class UserLocation {
                 '}';
     }
 
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int i) {
+
+    }
 }
