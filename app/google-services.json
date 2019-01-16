@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "143070286334",
+    "firebase_url": "https://maps-test-225722.firebaseio.com",
+    "project_id": "maps-test-225722",
+    "storage_bucket": "maps-test-225722.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:143070286334:android:40e6b23195f4fc59",
+        "android_client_info": {
+          "package_name": "com.mindandmatters.william.maps_test"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "143070286334-nrkffv11mm6pdic2ogu90vr79823rme8.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDrnnyDVEheTLksrSBxGZU4Jhg1mSFAiFw"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
