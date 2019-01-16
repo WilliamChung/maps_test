@@ -208,7 +208,7 @@ public class UserListFragment extends Fragment implements OnMapReadyCallback {
 
             return;
         }
-        map.setMyLocationEnabled(true);
+        //map.setMyLocationEnabled(true);
         mGoogleMap = map;
         addMapMarkers();
     }
