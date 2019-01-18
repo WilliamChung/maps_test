@@ -94,6 +94,7 @@ public class UserListFragment extends Fragment implements
     private GeoApiContext mGeoApiContext = null;
     private ArrayList<PolylineData> mPolylinesData = new ArrayList<>();
     private Marker mSelectedMarker = null;
+    private ArrayList<Marker> mTripMarkers = new ArrayList<>();
 
     public static UserListFragment newInstance() {
         return new UserListFragment();
@@ -124,6 +125,20 @@ public class UserListFragment extends Fragment implements
         setUserPosition();
 
         return view;
+    }
+
+    private void removeTripMarkers(){
+        for(Marker marker: mTripMarkers){
+            marker.remove();
+        }
+    }
+
+    private void resetSelectedMarker(){
+        if(mSelectedMarker != null){
+            mSelectedMarker.setVisible(true);
+            mSelectedMarker = null;
+            removeTripMarkers();
+        }
     }
 
     private void calculateDirections(Marker marker) {
@@ -178,7 +193,7 @@ public class UserListFragment extends Fragment implements
                     mPolylinesData = new ArrayList<>();
                 }
 
-                double duration = 999999999999;
+                double duration = 99999999;
 
                 for(DirectionsRoute route: result.routes){
                     Log.d(TAG, "run: leg: " + route.legs[0].toString());
@@ -519,6 +534,9 @@ public class UserListFragment extends Fragment implements
                     .setCancelable(true)
                     .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                         public void onClick(@SuppressWarnings("unused") final DialogInterface dialog, @SuppressWarnings("unused") final int id) {
+
+                            resetSelectedMarker();
+
                             mSelectedMarker = marker;
                             calculateDirections(marker);
                             dialog.dismiss();
@@ -560,6 +578,8 @@ public class UserListFragment extends Fragment implements
                 );
 
                 marker.showInfoWindow();
+
+                mTripMarkers.add(marker);
             }
             else{
                 polylineData.getPolyline().setColor(ContextCompat.getColor(getActivity(), R.color.darkGrey));
