@@ -118,6 +118,7 @@ public class UserListFragment extends Fragment implements
         mMapContainer = view.findViewById(R.id.map_container);
 
         view.findViewById(R.id.btn_full_screen_map).setOnClickListener(this);
+        view.findViewById(R.id.btn_reset_map).setOnClickListener(this);
 
         initUserListRecyclerView();
         initGoogleMap(savedInstanceState);
@@ -294,8 +295,9 @@ public class UserListFragment extends Fragment implements
 
     //loop through users in list, create cluster icon for each based on profile pic
     private void addMapMarkers(){
-
         if(mGoogleMap != null){
+
+            resetMap();
 
             if(mClusterManager == null){
                 mClusterManager = new ClusterManager<ClusterMarker>(getActivity().getApplicationContext(), mGoogleMap);
@@ -519,6 +521,11 @@ public class UserListFragment extends Fragment implements
                 break;
             }
 
+            case R.id.btn_reset_map:{
+                addMapMarkers();
+                break;
+            }
+
         }
     }
 
@@ -606,23 +613,24 @@ public class UserListFragment extends Fragment implements
                 null
         );
     }
+
+    private void resetMap(){
+        if(mGoogleMap != null) {
+            mGoogleMap.clear();
+
+            if(mClusterManager != null){
+                mClusterManager.clearItems();
+            }
+
+            if (mClusterMarkers.size() > 0) {
+                mClusterMarkers.clear();
+                mClusterMarkers = new ArrayList<>();
+            }
+
+            if(mPolylinesData.size() > 0){
+                mPolylinesData.clear();
+                mPolylinesData = new ArrayList<>();
+            }
+        }
+    }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
