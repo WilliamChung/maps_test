@@ -63,7 +63,8 @@ public class UserListFragment extends Fragment implements
         OnMapReadyCallback,
         View.OnClickListener,
         GoogleMap.OnInfoWindowClickListener,
-        GoogleMap.OnPolylineClickListener {
+        GoogleMap.OnPolylineClickListener,
+        UserRecyclerAdapter.UserListRecyclerClickListener {
 
     //constants
     private static final String TAG = "UserListFragment";
@@ -380,7 +381,7 @@ public class UserListFragment extends Fragment implements
     }
 
     private void initUserListRecyclerView() {
-        mUserRecyclerAdapter = new UserRecyclerAdapter(mUserList);
+        mUserRecyclerAdapter = new UserRecyclerAdapter(mUserList, this);
         mUserListRecyclerView.setAdapter(mUserRecyclerAdapter);
         mUserListRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
     }
@@ -630,6 +631,24 @@ public class UserListFragment extends Fragment implements
             if(mPolylinesData.size() > 0){
                 mPolylinesData.clear();
                 mPolylinesData = new ArrayList<>();
+            }
+        }
+    }
+
+    @Override
+    public void onUserClicked(int position) {
+        Log.d(TAG, "onUserClicked: selected a user: " + mUserList.get(position).getUser_id());
+
+        String selectedUserId = mUserList.get(position).getUser_id();
+
+        for(ClusterMarker clusterMarker: mClusterMarkers){
+            if(selectedUserId.equals(clusterMarker.getUser().getUser_id())){
+                mGoogleMap.animateCamera(CameraUpdateFactory.newLatLng(
+                        new LatLng(clusterMarker.getPosition().latitude, clusterMarker.getPosition().longitude)),
+                        600,
+                        null
+                );
+                break;
             }
         }
     }
