@@ -48,6 +48,7 @@ import com.google.maps.model.DirectionsRoute;
 import com.mindandmatters.william.maps_test.R;
 import com.mindandmatters.william.maps_test.adapters.UserRecyclerAdapter;
 import com.mindandmatters.william.maps_test.models.ClusterMarker;
+import com.mindandmatters.william.maps_test.models.PolylineData;
 import com.mindandmatters.william.maps_test.models.User;
 import com.mindandmatters.william.maps_test.models.UserLocation;
 import com.mindandmatters.william.maps_test.util.MyClusterManagerRenderer;
@@ -61,7 +62,8 @@ import static com.mindandmatters.william.maps_test.Constants.MAPVIEW_BUNDLE_KEY;
 public class UserListFragment extends Fragment implements
         OnMapReadyCallback,
         View.OnClickListener,
-        GoogleMap.OnInfoWindowClickListener {
+        GoogleMap.OnInfoWindowClickListener,
+        GoogleMap.OnPolylineClickListener {
 
     //constants
     private static final String TAG = "UserListFragment";
@@ -90,6 +92,7 @@ public class UserListFragment extends Fragment implements
     private Runnable mRunnable;
     private int mMapLayoutState = 0;
     private GeoApiContext mGeoApiContext = null;
+    private ArrayList<PolylineData> mPolylinesData = new ArrayList<>();
 
     public static UserListFragment newInstance() {
         return new UserListFragment();
@@ -165,6 +168,15 @@ public class UserListFragment extends Fragment implements
             public void run() {
                 Log.d(TAG, "run: result routes: " + result.routes.length);
 
+                if(mPolylinesData.size() > 0){
+                    for (PolylineData polylineData: mPolylinesData){
+                        polylineData.getPolyline().remove();
+                    }
+
+                    mPolylinesData.clear();
+                    mPolylinesData = new ArrayList<>();
+                }
+
                 for(DirectionsRoute route: result.routes){
                     Log.d(TAG, "run: leg: " + route.legs[0].toString());
                     List<com.google.maps.model.LatLng> decodedPath = PolylineEncoding.decode(route.overviewPolyline.getEncodedPath());
@@ -184,7 +196,7 @@ public class UserListFragment extends Fragment implements
                     Polyline polyline = mGoogleMap.addPolyline(new PolylineOptions().addAll(newDecodedPath));
                     polyline.setColor(ContextCompat.getColor(getActivity(), R.color.darkGrey));
                     polyline.setClickable(true);
-
+                    mPolylinesData.add(new PolylineData(polyline, route.legs[0]));
                 }
             }
         });
@@ -378,14 +390,15 @@ public class UserListFragment extends Fragment implements
 
     @Override
     public void onMapReady(GoogleMap map) {
-        map.addMarker(new MarkerOptions().position(new LatLng(0, 0)).title("Marker"));
-        if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) !=
-                PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-
-            return;
-        }
+//        map.addMarker(new MarkerOptions().position(new LatLng(0, 0)).title("Marker"));
+//        if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) !=
+//                PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+//
+//            return;
+//        }
         //map.setMyLocationEnabled(true);
         mGoogleMap = map;
+        mGoogleMap.setOnPolylineClickListener(this);
         addMapMarkers();
         mGoogleMap.setOnInfoWindowClickListener(this);
     }
@@ -508,6 +521,22 @@ public class UserListFragment extends Fragment implements
             alert.show();
         }
 
+    }
+
+    @Override
+    public void onPolylineClick(Polyline polyline) {
+
+        for(PolylineData polylineData: mPolylinesData){
+            Log.d(TAG, "onPolylineClick: toString: " + polylineData.toString());
+            if(polyline.getId().equals(polylineData.getPolyline().getId())){
+                polylineData.getPolyline().setColor(ContextCompat.getColor(getActivity(), R.color.blue1));
+                polylineData.getPolyline().setZIndex(1);
+            }
+            else{
+                polylineData.getPolyline().setColor(ContextCompat.getColor(getActivity(), R.color.darkGrey));
+                polylineData.getPolyline().setZIndex(0);
+            }
+        }
     }
 }
 
